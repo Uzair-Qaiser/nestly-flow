@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nestly — App Flow Documentation</title>
+  <style>
+    :root {
+      --navy: #1a3a6b;
+      --navy-light: #2a4f8f;
+      --orange: #f97316;
+      --bg: #f4f6fb;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --muted: #64748b;
+      --sidebar-w: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────── */
+    aside {
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--navy);
+      position: fixed;
+      top: 0; left: 0;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      z-index: 100;
+      padding-bottom: 60px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
+    }
+
+    aside::-webkit-scrollbar {
+      width: 4px;
+    }
+    aside::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    aside::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+    }
+    aside::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.4);
+    }
+
+    .sidebar-logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: white;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo-text { color: white; font-size: 18px; font-weight: 700; }
+    .logo-text span { color: var(--orange); }
+
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      padding: 18px 20px 6px;
+    }
+
+    aside a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 13px;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    aside a:hover, aside a.active {
+      background: rgba(255,255,255,0.08);
+      color: white;
+      border-left-color: var(--orange);
+    }
+    aside a .icon { font-size: 15px; min-width: 18px; }
+
+    .section-link {
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.9) !important;
+      margin-top: 4px;
+    }
+
+    .step-link {
+      padding-left: 38px !important;
+      font-size: 12px;
+    }
+
+    /* ── MAIN ────────────────────────────────────── */
+    main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .top-bar h1 { font-size: 16px; font-weight: 700; color: var(--navy); }
+    .top-bar p { font-size: 12px; color: var(--muted); }
+
+    .badge {
+      background: var(--navy);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .content { padding: 40px; }
+
+    /* ── SECTION BLOCK ───────────────────────────── */
+    .section {
+      margin-bottom: 60px;
+      scroll-margin-top: 80px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section-number {
+      width: 38px; height: 38px;
+      background: var(--navy);
+      color: white;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .section-title { font-size: 22px; font-weight: 700; color: var(--navy); }
+    .section-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+    .subsection {
+      margin-bottom: 40px;
+    }
+
+    .subsection-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tag-required { background: #fee2e2; color: #dc2626; }
+    .tag-optional { background: #fef9c3; color: #92400e; }
+    .tag-web { background: #dbeafe; color: #1d4ed8; }
+    .tag-email { background: #f0fdf4; color: #16a34a; }
+
+    /* ── SCREEN GRID ─────────────────────────────── */
+    .screens-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+    }
+
+    .screen-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen-card.mobile { width: 220px; }
+    .screen-card.web { width: 100%; }
+    .screen-card.web-half { width: calc(50% - 14px); min-width: 400px; }
+
+    /* phone frame */
+    .phone-frame {
+      background: #1a1a2e;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .phone-notch {
+      width: 80px; height: 10px;
+      background: #111;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+
+    .phone-frame img {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* web frame */
+    .web-frame {
+      background: #e8ecf0;
+      padding: 10px 12px 8px;
+    }
+
+    .browser-bar {
+      background: white;
+      border-radius: 6px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .browser-dots { display: flex; gap: 4px; }
+    .browser-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ff5f57; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #28c940; }
+
+    .browser-url {
+      font-size: 10px;
+      color: var(--muted);
+      background: #f1f5f9;
+      padding: 3px 8px;
+      border-radius: 4px;
+      flex: 1;
+    }
+
+    .web-frame img {
+      width: 100%;
+      border-radius: 4px;
+      display: block;
+    }
+
+    /* card info */
+    .card-info {
+      padding: 14px 16px;
+      flex: 1;
+    }
+
+    .step-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .card-desc ul {
+      margin-top: 6px;
+      padding-left: 16px;
+    }
+
+    .card-desc li { margin-bottom: 2px; }
+
+    .card-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #cbd5e1;
+      padding-top: 40px;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border-left: 3px solid var(--navy);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #1e40af;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .warn-box {
+      background: #fff7ed;
+      border-left: 3px solid var(--orange);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #9a3412;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* ── TRANSACTION BAR ─────────────────────────── */
+    .tx-bar {
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      gap: 0;
+      overflow-x: auto;
+    }
+
+    .tx-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .tx-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      border: 2px solid #cbd5e1;
+    }
+    .tx-dot.done { background: var(--navy); color: white; border-color: var(--navy); }
+    .tx-dot.active { background: var(--orange); color: white; border-color: var(--orange); }
+
+    .tx-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      max-width: 70px;
+      font-weight: 500;
+    }
+    .tx-label.done { color: var(--navy); font-weight: 600; }
+    .tx-label.active { color: var(--orange); font-weight: 700; }
+
+    .tx-line {
+      flex: 1;
+      height: 2px;
+      background: #e2e8f0;
+      min-width: 20px;
+      margin-bottom: 16px;
+    }
+    .tx-line.done { background: var(--navy); }
+
+    @media print {
+      aside { display: none; }
+      main { margin-left: 0; }
+      .top-bar { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ──────────────────────────────────────────── -->
+<aside>
+  <div class="sidebar-logo">
+    <div class="logo-icon">🏠</div>
+    <div class="logo-text">n<span>e</span>stly</div>
+  </div>
+
+  <div class="sidebar-label">App Sections</div>
+
+  <a href="#welcome" class="section-link"><span class="icon">👋</span> Welcome Flow</a>
+  <a href="#welcome-1" class="step-link">Slide 1 — Welcome</a>
+  <a href="#welcome-2" class="step-link">Slide 2 — Core Offerings</a>
+
+  <a href="#search" class="section-link"><span class="icon">🔍</span> Property Search</a>
+  <a href="#location" class="step-link">Location Selection</a>
+  <a href="#history" class="step-link">Search History</a>
+  <a href="#questionnaire" class="step-link">Questionnaire</a>
+  <a href="#preapproval" class="step-link">Mortgage Preapproval</a>
+  <a href="#guest-home" class="step-link">Home Screen</a>
+
+  <a href="#auth" class="section-link"><span class="icon">🔐</span> Authentication</a>
+  <a href="#login" class="step-link">Sign In</a>
+  <a href="#signup" class="step-link">Sign Up</a>
+  <a href="#auth-home" class="step-link">Home (Authenticated)</a>
+
+  <a href="#tour" class="section-link"><span class="icon">📅</span> Tour Flow</a>
+  <a href="#prop-details" class="step-link">Property Details</a>
+  <a href="#tour-terms" class="step-link">Tour Terms</a>
+  <a href="#tour-availability" class="step-link">Availability</a>
+  <a href="#tour-submitted" class="step-link">Tour Submitted</a>
+  <a href="#agent-tour" class="step-link">Agent Portal</a>
+  <a href="#tour-confirm" class="step-link">Agent Confirms</a>
+  <a href="#tour-email" class="step-link">Email Confirmation</a>
+  <a href="#start-tour" class="step-link">Start Tour</a>
+  <a href="#complete-tour" class="step-link">Complete Tour</a>
+  <a href="#tour-feedback" class="step-link">Buyer Feedback</a>
+
+  <a href="#offer" class="section-link"><span class="icon">💰</span> Offer Flow</a>
+  <a href="#make-offer" class="step-link">Make an Offer</a>
+  <a href="#offer-review" class="step-link">Offer Review</a>
+  <a href="#offer-submitted" class="step-link">Offer Submitted</a>
+  <a href="#agent-offer" class="step-link">Agent Portal</a>
+  <a href="#negotiation" class="step-link">Negotiation</a>
+  <a href="#offer-accepted" class="step-link">Offer Accepted</a>
+
+  <a href="#contract" class="section-link"><span class="icon">📄</span> Contract & Closing</a>
+  <a href="#select-vendors" class="step-link">Select Vendors</a>
+  <a href="#contract-attorney" class="step-link">Select Attorney</a>
+  <a href="#contract-lender" class="step-link">Select Lender</a>
+  <a href="#contract-inspector" class="step-link">Select Inspector</a>
+  <a href="#dealsheet" class="step-link">Dealsheet</a>
+  <a href="#contract-sign" class="step-link">Contract</a>
+  <a href="#mortgage" class="step-link">Mortgage (if needed)</a>
+  <a href="#closing" class="step-link">Closing</a>
+</aside>
+
+<!-- ── MAIN ──────────────────────────────────────────────── -->
+<main>
+  <div class="top-bar">
+    <div>
+      <h1>Nestly — App Flow Documentation</h1>
+      <p>Screen-by-screen breakdown of the full buyer journey</p>
+    </div>
+    <span class="badge">v1.1 · May 2026</span>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- 1. WELCOME                                     -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="section" id="welcome">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <div>
+          <div class="section-title">Welcome Flow</div>
+          <div class="section-subtitle">2-slide onboarding shown to all new users on first launch</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        These are the first screens a user sees when they open the app. The goal is to introduce Nestly's value proposition before asking for any information.
+      </div>
+
+      <div class="screens-grid">
+        <!-- Slide 1 -->
+        <div class="screen-card mobile" id="welcome-1">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/welcome-1.png" alt="Welcome Slide 1" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Slide 1 of 2</div>
+            <div class="card-title">Welcome to Nestly</div>
+            <div class="card-desc">
+              First impression screen with a real estate building hero image. Tagline reads:<br><br>
+              <em>"Nestly is your smart real estate companion, built to support buyers through every stage of journey"</em><br><br>
+              Two pagination dots visible. CTA: <strong>Next</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Slide 2 -->
+        <div class="screen-card mobile" id="welcome-2">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/welcome-2.png" alt="Welcome Slide 2" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Slide 2 of 2</div>
+            <div class="card-title">Core Offerings</div>
+            <div class="card-desc">
+              Lists the 3 key value propositions:
+              <ul>
+                <li><strong>Tour</strong> — Stress-free touring experience</li>
+                <li><strong>End to end services</strong> — We're with you every step of the way</li>
+                <li><strong>Incentive program</strong> — Work with a Nestly-preferred agent for special savings</li>
+              </ul>
+              CTA: <strong>Get Started</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- 2. PROPERTY SEARCH                            -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="section" id="search">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <div>
+          <div class="section-title">Property Search</div>
+          <div class="section-subtitle">Location selection (required) + Home preferences questionnaire (optional)</div>
+        </div>
+      </div>
+
+      <!-- Location Selection -->
+      <div class="subsection" id="location">
+        <div class="subsection-title">
+          📍 Location Selection
+          <span class="tag tag-required">Required</span>
+        </div>
+        <div class="info-box">
+          User must select a location before proceeding. This is used to filter all property listings to a specific region. The Next button stays disabled until a location is selected.
+        </div>
+
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/location-selection-1.png" alt="Location Selection" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Step 1</div>
+              <div class="card-title">Location Entry Screen</div>
+              <div class="card-desc">
+                Full-screen with building background. Asks:<br><br>
+                <em>"Where do you want to live in New York?"</em><br><br>
+                <ul>
+                  <li>Location pin icon</li>
+                  <li>Search field: "Select Location"</li>
+                  <li><strong>Next</strong> button (disabled until filled)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/location-selection-2.png" alt="Search Autocomplete" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Step 2</div>
+              <div class="card-title">Search Modal — Autocomplete</div>
+              <div class="card-desc">
+                When user taps the search field, a modal opens with live autocomplete results as they type.
+                <ul>
+                  <li>Example: typing "Brook" shows Brooklyn NY, Brooklyn Bridge, Brooklyn Botanic Garden, etc.</li>
+                  <li>User taps a result to confirm location</li>
+                  <li><strong>Cancel</strong> button to dismiss</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search History -->
+      <div class="subsection" id="history">
+        <div class="subsection-title">
+          🕐 Search History
+        </div>
+        <div class="info-box">
+          When the user opens the search screen and has previous searches, recent locations are shown before they start typing. Each item can be individually removed or all cleared at once.
+        </div>
+
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/property-search-history.png" alt="Search History" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Search History</div>
+              <div class="card-title">Recent Searches</div>
+              <div class="card-desc">
+                Shown when the search bar is focused and user has prior searches.
+                <ul>
+                  <li>Clock icon per item</li>
+                  <li>Location name (e.g. Brooklyn, NY, USA)</li>
+                  <li>× button to remove individual item</li>
+                  <li><strong>Clear all</strong> link (top right, blue)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questionnaire -->
+      <div class="subsection" id="questionnaire">
+        <div class="subsection-title">
+          📋 Home Preferences Questionnaire
+          <span class="tag tag-optional">Optional</span>
+        </div>
+        <div class="info-box">
+          After selecting a location, user is shown 4 optional questions. If the user answers them, the initial property listings will be filtered and ranked based on their preferences. The user can skip through without answering.
+        </div>
+
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/questions-1.png" alt="Q1 Beds and Baths" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Question 1 of 4 — Home Preferences</div>
+              <div class="card-title">Beds & Baths</div>
+              <div class="card-desc">
+                <em>"What is the minimum number of beds and baths you need?"</em>
+                <ul>
+                  <li><strong>Minimum Beds:</strong> 1BR / 2BR / 3BR / 4+BR</li>
+                  <li><strong>Minimum Baths:</strong> 1BA / 2BA / 3BA / 4+BA</li>
+                </ul>
+                Pill-style selectors. CTA: <strong>Next</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/questions-2.png" alt="Q2 Home Type" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Question 2 of 4 — Home Preferences</div>
+              <div class="card-title">Home Type</div>
+              <div class="card-desc">
+                <em>"What type of home are you looking for?"</em>
+                <ul>
+                  <li>Single Family</li>
+                  <li>Multi Family (2–4 Units)</li>
+                  <li>Town House</li>
+                  <li>Condo</li>
+                  <li>Co-op</li>
+                </ul>
+                Card-style list with icons. CTA: <strong>Next</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/questions-3.png" alt="Q3 Budget" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Question 3 of 4 — Budget & Financing</div>
+              <div class="card-title">Budget Range</div>
+              <div class="card-desc">
+                <em>"What is your budget range?"</em><br><br>
+                Dual-handle range slider showing Min and Max values in dollars. CTA: <strong>Next</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/questions-4.png" alt="Q4 Financing" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Question 4 of 4 — Budget & Financing</div>
+              <div class="card-title">Financing Type</div>
+              <div class="card-desc">
+                <em>"How will you finance your purchase?"</em>
+                <ul>
+                  <li>All cash → proceeds directly to home screen</li>
+                  <li>Mortgage → triggers Mortgage Preapproval prompt (see below)</li>
+                  <li>Not sure → proceeds directly to home screen</li>
+                </ul>
+                CTA: <strong>Submit</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mortgage Preapproval -->
+      <div class="subsection" id="preapproval">
+        <div class="subsection-title">
+          🏦 Mortgage Preapproval
+          <span class="tag tag-optional">If Mortgage Selected</span>
+        </div>
+        <div class="info-box">
+          If the user selects <strong>Mortgage</strong> on Question 4, a bottom sheet slides up asking about their preapproval status. This helps Nestly understand the buyer's readiness and connect them with lenders if needed.
+        </div>
+
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/preapproval.png" alt="Mortgage Preapproval" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Triggered After Q4 — Mortgage</div>
+              <div class="card-title">Mortgage Preapproval Prompt</div>
+              <div class="card-desc">
+                A bottom sheet slides up over the financing screen:
+                <ul>
+                  <li><strong>Title:</strong> "Mortgage Preapproval"</li>
+                  <li><strong>Subtitle:</strong> "Do you have a preapproval letter, or would you like to get one from our preferred lenders?"</li>
+                  <li><strong>Option 1 — I have a preapproval letter</strong><br>"I'm already preapproved and ready to make offers."</li>
+                  <li><strong>Option 2 — Get preapproval from our preferred lenders</strong><br>"We'll connect you with trusted lenders to get preapproved."</li>
+                </ul>
+                After selecting either option, user is taken to the home screen with filtered listings.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Home Screen -->
+      <div class="subsection" id="guest-home">
+        <div class="subsection-title">
+          🏠 Home Screen — All Users
+        </div>
+        <div class="info-box">
+          All users — both guest and authenticated — see the full property listings based on their location and questionnaire answers. <strong>No listings are blurred.</strong> Guest users can browse freely, but will be prompted to sign in or sign up if they attempt to request a tour or like/save a property.
+        </div>
+
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/home-1.png" alt="Home Screen" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Home Screen</div>
+              <div class="card-title">Property Listings</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Search bar pre-filled with selected location</li>
+                  <li>Filter + Location icons on the right</li>
+                  <li>Sort By: Nearby</li>
+                  <li>Full property cards visible: price, beds, baths, address, listing agent</li>
+                  <li>Bottom tab bar: Explore, People, Bookmarks, Deals, Documents</li>
+                </ul>
+                Guests who tap <strong>Request a Tour</strong> or <strong>Like/Save</strong> are redirected to the Sign In / Sign Up screen. Authenticated users proceed directly.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- 3. AUTHENTICATION                             -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="section" id="auth">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <div>
+          <div class="section-title">Authentication</div>
+          <div class="section-subtitle">Sign in for existing users · Sign up flow for new users (account creation only)</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        Triggered when a guest user attempts to request a tour or like a listing, or taps <strong>Sign in</strong>. Existing users go straight to login. New users create an account and land on the home screen. Attorney, lender, and inspector selection has moved to the <strong>Contract &amp; Closing stage</strong>.
+      </div>
+
+      <div class="screens-grid">
+        <!-- Login -->
+        <div class="screen-card mobile" id="login">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/login.png" alt="Login" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Returning User</div>
+            <div class="card-title">Sign In</div>
+            <div class="card-desc">
+              <ul>
+                <li>Nestly logo at top</li>
+                <li>Email* field</li>
+                <li>Password* field (show/hide toggle)</li>
+                <li>Remember Me checkbox</li>
+                <li><strong>Sign in</strong> button (navy)</li>
+                <li>Forgot the password? link</li>
+                <li>Continue with Facebook / Google</li>
+                <li>Footer: "Don't have an account? <strong>Sign up</strong>"</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">or</div>
+
+        <!-- Signup Step 1 -->
+        <div class="screen-card mobile" id="signup">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/signup-1.png" alt="Signup" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">New User — Step 1 of 2</div>
+            <div class="card-title">Sign Up — Account Details</div>
+            <div class="card-desc">
+              <ul>
+                <li>Email* field</li>
+                <li>Password* field</li>
+                <li>ToS checkbox: "By signing up you agree to our terms of use"</li>
+                <li><strong>Sign up</strong> button — proceeds to personal details</li>
+                <li>Continue with Facebook / Google</li>
+                <li>Footer: "Already have an account? <strong>Sign in</strong>"</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Signup Step 2 -->
+        <div class="screen-card mobile" id="signup-about">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/signup2.png" alt="About You" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">New User — Step 2 of 2</div>
+            <div class="card-title">About You</div>
+            <div class="card-desc">
+              <ul>
+                <li>Nestly logo at top</li>
+                <li>Title: <strong>"About you"</strong></li>
+                <li>First name* field</li>
+                <li>Last name* field</li>
+                <li>Phone number* field</li>
+                <li><strong>Submit</strong> button (navy) — completes account creation</li>
+              </ul>
+              After submitting, the user lands on the home screen. Attorney, lender &amp; inspector selection happens later at the <strong>Contract &amp; Closing stage</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Home Auth -->
+      <div class="subsection" style="margin-top:32px;" id="auth-home">
+        <div class="subsection-title">🏡 Home Screen — After Login / Signup</div>
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/home-1.png" alt="Authenticated Home" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Home Screen — Authenticated</div>
+              <div class="card-title">Full Listings Visible</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Greeting: "Hi, [Name]" with notification bell</li>
+                  <li>Search bar with location pre-filled</li>
+                  <li>Full property details: price, beds, baths, full address, listing agent</li>
+                  <li>Sort By: Nearby</li>
+                  <li>User can tap any property to view details and request a tour or like/save it</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/home-2.jpeg" alt="Sort By Dropdown" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Home Screen — Sort Options</div>
+              <div class="card-title">Sort By Dropdown</div>
+              <div class="card-desc">
+                Tapping <strong>Sort By</strong> opens a dropdown with the following options:
+                <ul>
+                  <li>Nearby ✓ (default)</li>
+                  <li>Price (High to Low)</li>
+                  <li>Price (Low to High)</li>
+                  <li>Beds (High to Low)</li>
+                  <li>Beds (Low to High)</li>
+                  <li>Baths (High to Low)</li>
+                  <li>Baths (Low to High)</li>
+                  <li>Lot Size (High to Low)</li>
+                  <li>Lot Size (Low to High)</li>
+                  <li>Newest</li>
+                  <li>Oldest</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- 4. TOUR FLOW                                  -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="section" id="tour">
+      <div class="section-header">
+        <div class="section-number">4</div>
+        <div>
+          <div class="section-title">Tour Flow</div>
+          <div class="section-subtitle">From property details → tour request → agent confirmation → start tour → completing the tour</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        The transaction bar tracks the property's progress through the deal. It appears on all deal-related screens and shows the current stage at a glance.
+      </div>
+
+      <!-- Transaction Bar -->
+      <div class="tx-bar">
+        <div class="tx-step">
+          <div class="tx-dot done">✓</div>
+          <div class="tx-label done">Tour Requested</div>
+        </div>
+        <div class="tx-line done"></div>
+        <div class="tx-step">
+          <div class="tx-dot active">✓</div>
+          <div class="tx-label active">Tour Scheduled</div>
+        </div>
+        <div class="tx-line"></div>
+        <div class="tx-step">
+          <div class="tx-dot">3</div>
+          <div class="tx-label">Tour Completed</div>
+        </div>
+        <div class="tx-line"></div>
+        <div class="tx-step">
+          <div class="tx-dot">4</div>
+          <div class="tx-label">Offer Submission</div>
+        </div>
+        <div class="tx-line"></div>
+        <div class="tx-step">
+          <div class="tx-dot">5</div>
+          <div class="tx-label">Offer Finalized</div>
+        </div>
+        <div class="tx-line"></div>
+        <div class="tx-step">
+          <div class="tx-dot">6</div>
+          <div class="tx-label">Contract</div>
+        </div>
+        <div class="tx-line"></div>
+        <div class="tx-step">
+          <div class="tx-dot">7</div>
+          <div class="tx-label">Closing</div>
+        </div>
+      </div>
+
+      <div class="screens-grid">
+        <!-- Property Details -->
+        <div class="screen-card mobile" id="prop-details">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/req-tour-1.png" alt="Property Details" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 1</div>
+            <div class="card-title">Property Details</div>
+            <div class="card-desc">
+              User taps a property on the home screen to open this page.
+              <ul>
+                <li>Property address + price in header</li>
+                <li><strong>Overview</strong> — full description with "read more"</li>
+                <li><strong>Location</strong> — embedded Google Map</li>
+                <li><strong>Facts & Features</strong> — tabs: Property / Interior / Other (Home Type, Year Built, etc.)</li>
+                <li>Bottom CTA: <strong>"Request a tour"</strong> (navy button)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Tour Terms -->
+        <div class="screen-card mobile" id="tour-terms">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/req-tour-2.png" alt="Tour Terms" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 2</div>
+            <div class="card-title">Tour Terms — Bottom Sheet</div>
+            <div class="card-desc">
+              A bottom sheet slides up when "Request a tour" is tapped.
+              <ul>
+                <li>Tour availability subject to agent, seller, property availability</li>
+                <li>Request does not guarantee confirmation</li>
+                <li>A licensed agent may contact the buyer</li>
+                <li>Tour details may change</li>
+                <li>Nestly does not represent listed properties unless stated</li>
+                <li>Proceeding = agreement to Nestly's Terms & Privacy Policy</li>
+              </ul>
+              User must check <strong>"I agree to the Terms & Conditions"</strong> before Continue is enabled.
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Availability Calendar -->
+        <div class="screen-card mobile" id="tour-availability">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/req-tour-3.png" alt="Tour Availability" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 3a</div>
+            <div class="card-title">Your Availabilities — Calendar</div>
+            <div class="card-desc">
+              <ul>
+                <li>Monthly calendar view (navigable)</li>
+                <li>User taps a date to select it</li>
+                <li>Below the calendar: <strong>"Select your available time (multiple)"</strong></li>
+                <li><strong>+ Add a time range</strong> button opens a custom time picker</li>
+                <li>Multiple time ranges per date can be added</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Custom Time Picker — Start -->
+        <div class="screen-card mobile">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/req-tour-33.png" alt="Custom Start Time Picker" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 3b</div>
+            <div class="card-title">Custom Time Picker — Start Time</div>
+            <div class="card-desc">
+              Tapping <strong>"+ Add a time range"</strong> opens a time picker dialog:
+              <ul>
+                <li>Label: <strong>START TIME</strong></li>
+                <li>Hour selector (e.g. 9)</li>
+                <li>Minute selector (e.g. 00)</li>
+                <li>AM / PM toggle</li>
+                <li>CTAs: <strong>Cancel</strong> or <strong>OK</strong></li>
+              </ul>
+              After confirming start time, the end time picker appears.
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Custom Time Picker — End -->
+        <div class="screen-card mobile">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/req-tour-34.png" alt="Custom End Time Picker" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 3c</div>
+            <div class="card-title">Custom Time Picker — End Time</div>
+            <div class="card-desc">
+              Immediately after selecting a start time, the END TIME picker appears:
+              <ul>
+                <li>Label: <strong>END TIME</strong></li>
+                <li>Hour / Minute / AM-PM selectors</li>
+                <li>Default increments 1 hour from start time</li>
+                <li>CTAs: <strong>Cancel</strong> or <strong>OK</strong></li>
+              </ul>
+              Confirmed time range is added as a card (e.g. "9:00 AM – 10:00 AM"). User can add multiple ranges.
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Availability Summary -->
+        <div class="screen-card mobile">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/req-tour-4.png" alt="Availability Summary" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 3d</div>
+            <div class="card-title">Your Availabilities — Summary</div>
+            <div class="card-desc">
+              Shows a list of all selected date + time combinations as cards.
+              <ul>
+                <li>Example: "Thu May, 28 — 2pm–3pm, 1pm–2pm"</li>
+                <li><strong>+</strong> button (top right) to add more availabilities</li>
+                <li>⋯ button on each card to edit or remove</li>
+                <li>CTA: <strong>Submit</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Submitted -->
+        <div class="screen-card mobile" id="tour-submitted">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/req-tour-5.png" alt="Tour Submitted" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 4</div>
+            <div class="card-title">Tour Submitted</div>
+            <div class="card-desc">
+              Confirmation screen shown after Submit.
+              <br><br>
+              <em>"Thank you! We will confirm with your tour schedule shortly"</em>
+              <br><br>
+              CTA: <strong>OK</strong> — returns user to home screen. Tour request is now sent to the agent portal.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Portal -->
+      <div class="subsection" style="margin-top:36px;" id="agent-tour">
+        <div class="subsection-title">
+          🖥 Agent Web Portal — Tour Request Received
+          <span class="tag tag-web">Web Portal</span>
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web">
+            <div class="web-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <span class="dot-red"></span>
+                  <span class="dot-yellow"></span>
+                  <span class="dot-green"></span>
+                </div>
+                <div class="browser-url">proj-nestly-frontend.vercel.app/admin/dashboard</div>
+              </div>
+              <img src="images/req-tour-6.png" alt="Agent Dashboard" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Agent View — Dashboard</div>
+              <div class="card-title">Tours Requested</div>
+              <div class="card-desc">
+                The agent's web portal dashboard shows summary stats at the top:
+                <strong>Tour Requested · Tours Scheduled · Tours Completed · Offer Request · In Contract</strong>
+                <br><br>
+                Below, in section "01 Tours Requested", the agent sees property cards for all pending tour requests. Each card shows property image, location, price, bed/bath count, and address.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Confirms Tour -->
+      <div class="subsection" id="tour-confirm">
+        <div class="subsection-title">
+          🖥 Agent Confirms Tour
+          <span class="tag tag-web">Web Portal</span>
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web">
+            <div class="web-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <span class="dot-red"></span>
+                  <span class="dot-yellow"></span>
+                  <span class="dot-green"></span>
+                </div>
+                <div class="browser-url">proj-nestly-frontend.vercel.app/property-detail?tourId=...</div>
+              </div>
+              <img src="images/confirm-tour-1.png" alt="Agent Confirms Tour" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Agent View — Property Details</div>
+              <div class="card-title">Confirm Tour</div>
+              <div class="card-desc">
+                Agent opens the property detail page and sees the "Tours Requested" section with all time slots the buyer submitted.
+                <ul>
+                  <li>Each slot shown as a row (e.g. Thu, May 28 2:00PM–3:00PM)</li>
+                  <li>Agent clicks the preferred slot to select it (highlighted in blue)</li>
+                  <li>Actions: <strong>Cancel</strong> or <strong>Confirm Tour</strong></li>
+                </ul>
+                On confirmation, the tour moves to "Tour Scheduled" status and the buyer receives a confirmation email.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Confirmation -->
+      <div class="subsection" id="tour-email">
+        <div class="subsection-title">
+          📧 Tour Confirmation Email
+          <span class="tag tag-email">Email</span>
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web">
+            <div class="web-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <span class="dot-red"></span>
+                  <span class="dot-yellow"></span>
+                  <span class="dot-green"></span>
+                </div>
+                <div class="browser-url">Email Client — Tour Confirmed</div>
+              </div>
+              <img src="images/confirm-tour-2.png" alt="Tour Confirmation Email" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Automated Email → Buyer</div>
+              <div class="card-title">Tour Confirmed Email</div>
+              <div class="card-desc">
+                Sent to the buyer automatically after the agent confirms.
+                <ul>
+                  <li>Subject: "Tour Confirmed"</li>
+                  <li>Greeting + confirmation message</li>
+                  <li>Confirmed date/time (e.g. May 28, 2026 at 08:00 AM UTC)</li>
+                  <li>Reminder to arrive on time, contact agent if reschedule needed</li>
+                  <li>Property Details block: Address, Price, Bedrooms, Bathrooms, property photo</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start Tour -->
+      <div class="subsection" id="start-tour">
+        <div class="subsection-title">🚀 Start Tour</div>
+        <div class="info-box">
+          On the day of the tour, the buyer navigates to the <strong>Deals / Tours</strong> tab and taps the property. When the buyer is at the property and ready to begin, they tap <strong>Start Tour</strong>. This moves the deal to the "Tour Started" stage.
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/start-tour.jpeg" alt="Start Tour" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Deals / Tours Tab — Tour Day</div>
+              <div class="card-title">Start Tour Screen</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Transaction bar: Tour Requested ✓ → Tour Scheduled ✓ → Tour Completed → Offer Submission</li>
+                  <li>Blue banner: "Your tour is on Fri May, 29 at 1:00pm."</li>
+                  <li>Property card (price, beds, baths, address)</li>
+                  <li>Location map</li>
+                  <li>CTA: <strong>"Start Tour"</strong> — tapped when buyer arrives at the property</li>
+                </ul>
+                After starting, the tour status advances and the buyer can proceed to complete the tour.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complete Tour -->
+      <div class="subsection" id="complete-tour">
+        <div class="subsection-title">✅ Complete Tour</div>
+        <div class="info-box">
+          After the tour is done, either the buyer or agent can mark the tour as complete. This triggers the post-tour feedback flow.
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/complete-tour.png" alt="Complete Tour" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Deals / Tours Tab</div>
+              <div class="card-title">Complete Tour Screen</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Transaction bar at top: Tour Requested ✓ → Tour Scheduled ✓ → Tour Completed (active) → Offer Submission</li>
+                  <li>Blue banner: "Your tour is on Thu May, 28 at 1:00pm."</li>
+                  <li>Property card (price, beds, baths, address)</li>
+                  <li>Location map</li>
+                  <li>CTA: <strong>"Complete Tour"</strong> — can be pressed by buyer or agent</li>
+                </ul>
+                After completing, the buyer is prompted to leave post-tour feedback.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tour Feedback -->
+      <div class="subsection" id="tour-feedback">
+        <div class="subsection-title">⭐ Buyer Feedback — Post-Tour</div>
+        <div class="info-box">
+          After the tour is marked complete, the buyer goes through a 3-step feedback flow: first deciding whether to consider the property further, then rating it, then leaving notes and photos. All steps can be skipped.
+        </div>
+        <div class="screens-grid">
+          <!-- Step 1: Like? -->
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/feed-1.jpeg" alt="Like Property?" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Feedback Step 1 of 3</div>
+              <div class="card-title">Like This Property?</div>
+              <div class="card-desc">
+                Full-screen prompt shown immediately after completing the tour:
+                <ul>
+                  <li>Heart icon</li>
+                  <li><strong>"Like this property for further consideration?"</strong></li>
+                  <li>CTA: <strong>"Yes, like it"</strong> (navy)</li>
+                  <li>Secondary: <strong>"No, I didn't like it"</strong></li>
+                </ul>
+                Both responses proceed to the rating step.
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- Step 2: Rate -->
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/feed-2.jpeg" alt="Rate Property" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Feedback Step 2 of 3</div>
+              <div class="card-title">Rate This Property</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Numbered list icon</li>
+                  <li><strong>"Rate this property"</strong></li>
+                  <li>5-star selector (tap to rate)</li>
+                  <li>CTA: <strong>Next</strong></li>
+                  <li>Option to <strong>Skip</strong></li>
+                </ul>
+                Rating is tied to the property and deal record, visible to the agent on the web portal.
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- Step 3: Notes & Review -->
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/feed-3.jpeg" alt="Notes and Review" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Feedback Step 3 of 3</div>
+              <div class="card-title">Notes & Review</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Document icon</li>
+                  <li><strong>"Notes &amp; Review"</strong></li>
+                  <li>Text field 1: short note (e.g. "Nice tour")</li>
+                  <li>Text field 2: longer review (e.g. "I like this property")</li>
+                  <li><strong>Tour Photos (optional)</strong> — camera icon + Add button to attach photos taken during the tour</li>
+                  <li>CTA: <strong>Submit</strong> — saves all feedback and advances to Offer stage</li>
+                  <li>Option to <strong>Skip</strong></li>
+                </ul>
+                All feedback is visible to the agent on the web portal tied to the deal record. Property then moves to the <strong>Offer stage</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- 5. OFFER FLOW                                 -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="section" id="offer">
+      <div class="section-header">
+        <div class="section-number">5</div>
+        <div>
+          <div class="section-title">Offer Flow</div>
+          <div class="section-subtitle">Buyer makes an offer (or requests a suggested offer) → agent accepts or counters → negotiation loop → offer accepted</div>
+        </div>
+      </div>
+
+      <div class="screens-grid">
+        <!-- Make Offer trigger -->
+        <div class="screen-card mobile" id="make-offer">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/offer-1.png" alt="Make Offer" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 1</div>
+            <div class="card-title">Ready to Make an Offer?</div>
+            <div class="card-desc">
+              After tour is marked complete and feedback submitted, this screen is shown.
+              <ul>
+                <li>Transaction bar: Tour Requested ✓, Tour Scheduled ✓, Tour Completed ✓, Offer Submission (active)</li>
+                <li>Banner: "Tour completed. Ready to make an offer?"</li>
+                <li>Property summary card</li>
+                <li>Location map</li>
+                <li>CTA: <strong>"Make an offer"</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Offer Form — Own Price -->
+        <div class="screen-card mobile">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/offer-2.png" alt="Offer Form" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 2a — Enter Own Offer</div>
+            <div class="card-title">Make an Offer — Form</div>
+            <div class="card-desc">
+              Bottom sheet slides up with:
+              <ul>
+                <li>Checkbox: <strong>"Get Comps Study / Suggested Offer from Nestly"</strong> (unchecked)</li>
+                <li>Offer price input: <em>Enter amount</em></li>
+                <li>Notes text field</li>
+                <li>CTA: <strong>Continue</strong></li>
+              </ul>
+              If the buyer enters their own price and taps Continue, they proceed to the Offer Review screen.
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">or</div>
+
+        <!-- Offer Form — Comps Selected -->
+        <div class="screen-card mobile">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/offer-3.jpeg" alt="Get Suggested Offer" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 2b — Suggested Offer</div>
+            <div class="card-title">Get Comps Study from Nestly</div>
+            <div class="card-desc">
+              If the buyer checks <strong>"Get Comps Study / Suggested Offer from Nestly"</strong>:
+              <ul>
+                <li>The price input field is hidden</li>
+                <li>Notes field remains available</li>
+                <li>Continue button proceeds to the Suggested Offer waiting screen</li>
+              </ul>
+              Nestly's team will prepare a market comps analysis and suggest an offer price.
+            </div>
+          </div>
+        </div>
+
+        <div class="card-arrow">→</div>
+
+        <!-- Suggested Offer Waiting -->
+        <div class="screen-card mobile">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <img src="images/suggested.jpeg" alt="Suggested Offer Waiting" />
+          </div>
+          <div class="card-info">
+            <div class="step-num">Step 2c — Waiting for Suggestion</div>
+            <div class="card-title">Suggested Offer — Pending</div>
+            <div class="card-desc">
+              Shown when the buyer selects the Comps Study option:
+              <ul>
+                <li>Property card shown for reference</li>
+                <li>Info banner: <em>"Nestly team is putting together a suggested offer proposal for you, you will be noticed shortly!"</em></li>
+              </ul>
+              The buyer waits for a notification. Once Nestly sends the suggested offer, the buyer can review it and proceed to submit.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Offer Review & Submitted -->
+      <div class="subsection" style="margin-top:36px;">
+        <div class="screens-grid">
+          <!-- Offer Review -->
+          <div class="screen-card mobile" id="offer-review">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/offer-4.png" alt="Offer Review" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Step 3</div>
+              <div class="card-title">Offer Review</div>
+              <div class="card-desc">
+                Summary card showing:
+                <ul>
+                  <li>Property details (listing price, beds, baths, address)</li>
+                  <li>"Your offer price" — buyer's entered (or Nestly-suggested) amount</li>
+                  <li>"Your Offer" label</li>
+                  <li>CTA: <strong>"Review price &amp; offer"</strong> → confirms and submits</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- Offer Submitted -->
+          <div class="screen-card mobile" id="offer-submitted">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/offer-5.png" alt="Offer Submitted" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Step 4</div>
+              <div class="card-title">Offer Submitted</div>
+              <div class="card-desc">
+                All 4 transaction bar stages now active.
+                <br><br>
+                Banner: <em>"Offer submitted – waiting for agent response"</em>
+                <br><br>
+                Property card and map still visible. User waits for agent to respond.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Portal Offers -->
+      <div class="subsection" style="margin-top:36px;" id="agent-offer">
+        <div class="subsection-title">
+          🖥 Agent Web Portal — Offer Received
+          <span class="tag tag-web">Web Portal</span>
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web-half">
+            <div class="web-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span>
+                </div>
+                <div class="browser-url">Dashboard — Offers Section</div>
+              </div>
+              <img src="images/offer-6.png" alt="Agent Offers Dashboard" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Agent View — Dashboard</div>
+              <div class="card-title">Offers Section</div>
+              <div class="card-desc">
+                Section "04 Offers" on the dashboard shows property cards for all incoming offers. Agent selects a property to review the offer details.
+              </div>
+            </div>
+          </div>
+
+          <div class="screen-card web-half">
+            <div class="web-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span>
+                </div>
+                <div class="browser-url">Property Details — Offers</div>
+              </div>
+              <img src="images/offer-7.png" alt="Agent Respond to Offer" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Agent View — Property Details</div>
+              <div class="card-title">Review & Respond to Offer</div>
+              <div class="card-desc">
+                On the property detail page, under "Offers":
+                <ul>
+                  <li>"The buyer has sent an offer. Please review and respond below."</li>
+                  <li>Counter offer price input</li>
+                  <li>CTA: <strong>Submit</strong> — agent either accepts or submits a counter price</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Negotiation Loop -->
+      <div class="subsection" id="negotiation">
+        <div class="subsection-title">🔄 Negotiation Loop</div>
+        <div class="info-box">
+          If the agent submits a counter offer, the buyer is notified and can either accept the counter or resubmit a new offer. This loop continues until one party accepts.
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/offer-8.png" alt="Counter Offer Received" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Negotiation — Step 1</div>
+              <div class="card-title">Counter Offer Received</div>
+              <div class="card-desc">
+                Banner updates to: <em>"Offer received – agent has sent a counter offer"</em>
+                <br><br>
+                CTA: <strong>"View Offer"</strong> — takes user to the offer history screen.
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/offer-9.png" alt="Offer History" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Negotiation — Step 2</div>
+              <div class="card-title">Offer History</div>
+              <div class="card-desc">
+                Shows the full negotiation thread:
+                <ul>
+                  <li><strong>Counter Offer (date)</strong> — agent's counter price — "Nestly recommended" — "View offer" button</li>
+                  <li><strong>Offer rejected (date)</strong> — buyer's original price — "Your Offer"</li>
+                </ul>
+                Buyer can: <strong>Accept the counter</strong> or <strong>resubmit a new offer</strong> (loops back to offer form).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Offer Accepted / Deal View -->
+      <div class="subsection" id="offer-accepted">
+        <div class="subsection-title">✅ Offer Accepted — Deal View</div>
+        <div class="info-box">
+          Once the offer is accepted by the agent (or the buyer accepts a counter), all 4 transaction bar stages are complete. The deal view switches to a three-tab layout: <strong>Property</strong>, <strong>History</strong>, and <strong>Vendors</strong>. The buyer is prompted to select their vendors to proceed to the Contract stage.
+        </div>
+        <div class="screens-grid">
+          <!-- Property Tab -->
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/offer-finalized.jpeg" alt="Offer Finalized - Property Tab" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Deal View — Property Tab</div>
+              <div class="card-title">Property Overview</div>
+              <div class="card-desc">
+                <ul>
+                  <li>All 4 deal stages checked: Tour Requested ✓, Tour Scheduled ✓, Tour Completed ✓, Offer Submission ✓</li>
+                  <li>Three tabs: <strong>Property</strong> (active) · History · Vendors</li>
+                  <li>Property card (price, beds, baths, address)</li>
+                  <li>Location map</li>
+                  <li>CTA: <strong>"Select Vendors"</strong> — opens the vendor selection flow</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- History Tab -->
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/history.jpeg" alt="Deal History Tab" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Deal View — History Tab</div>
+              <div class="card-title">Deal Timeline & Feedback</div>
+              <div class="card-desc">
+                Timeline of all deal events:
+                <ul>
+                  <li>Tour Requested — date</li>
+                  <li>Tour Scheduled — date &amp; time</li>
+                  <li>Tour Completed — date</li>
+                  <li>Offer Accepted — date</li>
+                </ul>
+                Below the timeline: <strong>Feedback</strong> card showing the post-tour rating (e.g. 4/5 stars), written review, and tour photos. CTA: <strong>View Offer</strong>.
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- History Tab — Scrolled (Offer History) -->
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/history-3.jpeg" alt="Offer History in History Tab" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Deal View — History Tab (scrolled)</div>
+              <div class="card-title">Feedback + Offer History</div>
+              <div class="card-desc">
+                Scrolling down the History tab reveals:
+                <ul>
+                  <li>Full feedback card: rating, written review, tour photos</li>
+                  <li><strong>Offer History</strong> section showing the negotiation thread</li>
+                  <li>Example: "Offer Accepted — $45,000 (Agent)" and "Initial Offer — $350,000 (You)"</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- Vendors Tab -->
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/vendors.jpeg" alt="Vendors Tab" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Deal View — Vendors Tab</div>
+              <div class="card-title">Assigned Vendors</div>
+              <div class="card-desc">
+                Shows all selected vendors for this deal:
+                <ul>
+                  <li><strong>Marcus Thorne</strong> — Home Inspection</li>
+                  <li><strong>Aris Thorne</strong> — Lender</li>
+                  <li><strong>Dr. Alistair Cook</strong> — Attorney</li>
+                </ul>
+                Each vendor card shows photo, name, and role. Populated after the buyer completes vendor selection. CTA: <strong>View Offer</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- 6. CONTRACT & CLOSING                        -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="section" id="contract">
+      <div class="section-header">
+        <div class="section-number">6</div>
+        <div>
+          <div class="section-title">Contract &amp; Closing</div>
+          <div class="section-subtitle">Select vendors (attorney, lender, inspector) → dealsheet → contract → mortgage → closing</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        Once the offer is accepted and the buyer taps <strong>"Select Vendors"</strong>, they choose their attorney, lender, and home inspector to begin the contract and closing process.
+      </div>
+
+      <!-- Select Vendors Intro -->
+      <div class="subsection" id="select-vendors">
+        <div class="subsection-title">
+          👥 Vendor Selection Overview
+        </div>
+        <div class="info-box">
+          The buyer selects three vendors in sequence: <strong>Attorney</strong> (required) → <strong>Lender</strong> (required) → <strong>Home Inspector</strong> (if needed). All are drawn from the Nestly-preferred network. After selection, the deal advances to the Dealsheet stage.
+        </div>
+      </div>
+
+      <!-- Select Attorney -->
+      <div class="subsection" id="contract-attorney">
+        <div class="subsection-title">
+          ⚖️ Select Attorney
+          <span class="tag tag-required">Required</span>
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card mobile">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/select-attorney.jpeg" alt="Select Attorney" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Vendor Selection — Step 1</div>
+              <div class="card-title">Select Attorney</div>
+              <div class="card-desc">
+                Buyer selects a Nestly-network attorney to handle their contract.
+                <ul>
+                  <li>Search bar: "Search Attorney"</li>
+                  <li>Each card: photo, name, role, location pin, star rating badge, review count</li>
+                  <li>Example: Marcus Vance ★4.0 (Manhattan) · Dr. Alistair Cook ★4.7 (Bronx)</li>
+                  <li><strong>Next</strong> button (disabled until selection made)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- Select Lender -->
+          <div class="screen-card mobile" id="contract-lender">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/select-lender.jpeg" alt="Select Lender" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Vendor Selection — Step 2</div>
+              <div class="card-title">Select Lender</div>
+              <div class="card-desc">
+                Buyer selects a mortgage lender for financing (if applicable).
+                <ul>
+                  <li>Same searchable list UI as attorney selection</li>
+                  <li>Example: Elena Rodriguez ★4.5 (selected, blue border), Aris Thorne ★4.5, Pun &amp; Associates, Mike Rochers</li>
+                  <li><strong>Next</strong> button proceeds to inspector selection</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-arrow">→</div>
+
+          <!-- Select Inspector -->
+          <div class="screen-card mobile" id="contract-inspector">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <img src="images/select-inspector.png" alt="Select Inspector" />
+            </div>
+            <div class="card-info">
+              <div class="step-num">Vendor Selection — Step 3</div>
+              <div class="card-title">Select Home Inspector <span class="tag tag-optional" style="vertical-align:middle;">Optional</span></div>
+              <div class="card-desc">
+                Buyer selects a home inspector to assess the property.
+                <ul>
+                  <li>Julian Vaney ★4.5 (New Jersey)</li>
+                  <li>Marcus Thorne ★4.3 (NY) — shown selected with blue border</li>
+                  <li>Tamara Abir ★0.0 (NY)</li>
+                </ul>
+                CTA: <strong>Submit</strong> — confirms all vendor selections. Inspector details are surfaced to the agent on the web portal.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dealsheet -->
+      <div class="subsection" id="dealsheet">
+        <div class="subsection-title">
+          📋 Dealsheet
+          <span class="tag tag-required">Required</span>
+        </div>
+        <div class="info-box">
+          After all vendors are selected, the agent prepares a dealsheet summarising all agreed terms — price, contingencies, closing date, and parties involved. Both buyer and agent review and sign off before the formal contract is drafted.
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web-half">
+            <div class="card-info">
+              <div class="step-num">Contract — Step 1</div>
+              <div class="card-title">Dealsheet Review</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Summary of agreed offer price, accepted date, contingencies</li>
+                  <li>Assigned attorney name and lender name shown</li>
+                  <li>Inspector details (if selected)</li>
+                  <li>Buyer reviews all terms</li>
+                  <li>CTA: <strong>Confirm &amp; Proceed</strong> — advances to contract signing</li>
+                </ul>
+                Screens to be finalised.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contract Signing -->
+      <div class="subsection" id="contract-sign">
+        <div class="subsection-title">
+          ✍️ Contract
+          <span class="tag tag-required">Required</span>
+        </div>
+        <div class="info-box">
+          The attorney prepares the purchase contract based on the dealsheet. The buyer reviews and signs the contract digitally through the app.
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web-half">
+            <div class="card-info">
+              <div class="step-num">Contract — Step 2</div>
+              <div class="card-title">Sign Contract</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Full contract document rendered in-app (PDF viewer)</li>
+                  <li>Buyer scrolls through and reviews all clauses</li>
+                  <li>Digital signature field at the bottom</li>
+                  <li>CTA: <strong>Sign &amp; Submit</strong> — sends signed contract to attorney and agent</li>
+                </ul>
+                Screens to be finalised.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mortgage -->
+      <div class="subsection" id="mortgage">
+        <div class="subsection-title">
+          🏦 Mortgage Processing
+          <span class="tag tag-optional">If Needed</span>
+        </div>
+        <div class="info-box">
+          If the buyer is financing via mortgage, the selected lender is notified and the mortgage application process begins in parallel with the contract stage. Cash buyers skip this step entirely.
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web-half">
+            <div class="card-info">
+              <div class="step-num">Contract — Step 3 (if financed)</div>
+              <div class="card-title">Mortgage Application</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Lender receives buyer's details and deal summary automatically</li>
+                  <li>Buyer is notified of mortgage application status in-app</li>
+                  <li>Status updates: Applied → Under Review → Pre-Approved → Approved</li>
+                  <li>Buyer may need to upload supporting documents (pay stubs, bank statements)</li>
+                </ul>
+                Screens to be finalised. Once mortgage is approved (or for cash buyers, once contract is signed), the deal advances to <strong>Closing</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Closing -->
+      <div class="subsection" id="closing">
+        <div class="subsection-title">
+          🏁 Closing
+          <span class="tag tag-required">Final Step</span>
+        </div>
+        <div class="info-box">
+          The final stage of the deal. All parties have signed the contract and (if applicable) the mortgage is approved. The buyer completes the closing process and receives the keys.
+        </div>
+        <div class="screens-grid">
+          <div class="screen-card web-half">
+            <div class="card-info">
+              <div class="step-num">Contract — Step 4</div>
+              <div class="card-title">Closing</div>
+              <div class="card-desc">
+                <ul>
+                  <li>Final walkthrough of the property confirmed</li>
+                  <li>Closing disclosure reviewed — final costs, fees, credits</li>
+                  <li>Buyer signs all closing documents digitally</li>
+                  <li>Funds transferred (down payment + closing costs)</li>
+                  <li>Title transferred and deed recorded</li>
+                  <li>CTA: <strong>Complete Closing</strong> — marks the deal as fully closed</li>
+                </ul>
+                Transaction bar completes all stages: Tour ✓ → Offer ✓ → Contract ✓ → <strong>Closing ✓</strong>
+                <br><br>
+                Buyer receives a congratulatory confirmation and the property is marked as <strong>Sold</strong> in their account.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // Highlight active sidebar link on scroll
+  const sections = document.querySelectorAll('[id]');
+  const links = document.querySelectorAll('aside a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`aside a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
